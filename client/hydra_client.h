@@ -4,5 +4,7 @@
 # include <string.h>
 # include <sys/socket.h>
 # include <arpa/inet.h>
+# include <unistd.h>
+# define BUF_SIZE 1000
 
 #endif

@@ -9,6 +9,7 @@
 # include <sys/socket.h>
 # include <arpa/inet.h>
 # include <string.h>
+# define BUF_SIZE 2000
 
 void					daemonize(const char *cmd);
 
