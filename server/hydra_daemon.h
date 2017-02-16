@@ -11,6 +11,15 @@
 # include <string.h>
 # define BUF_SIZE 2000
 
+typedef struct s_connection
+{
+	int socket_desc;
+	int client_sock;
+	char client_message[BUF_SIZE];
+	struct sockaddr_in server;
+	struct sockaddr_in client;
+}				t_connection;
+
 void					daemonize(const char *cmd);
 
 #endif
