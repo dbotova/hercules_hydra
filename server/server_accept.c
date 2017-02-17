@@ -1,29 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hydra_client.h                                     :+:      :+:    :+:   */
+/*   server_accept.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dbotova <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/02/16 20:18:59 by dbotova           #+#    #+#             */
-/*   Updated: 2017/02/16 20:19:01 by dbotova          ###   ########.fr       */
+/*   Created: 2017/02/16 21:46:14 by dbotova           #+#    #+#             */
+/*   Updated: 2017/02/16 21:46:15 by dbotova          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HYDRA_CLIENT_H
-# define HYDRA_CLIENT_H
-# include <stdio.h>
-# include <string.h>
-# include <sys/socket.h>
-# include <arpa/inet.h>
-# include <unistd.h>
-# include "../server/libft.h"
-# define BUF_SIZE 1000
+#include "hydra_server.h"
 
-typedef struct	s_client_connection
+int  server_accept_client(t_connection *con)
 {
-	int			sock;
-	struct		sockaddr_in server;
-}				t_client_connection;
+    int c;
 
-#endif
+    c = 0;
+    puts("Waiting for incoming connections...");
+    con->client_sock = accept(con->socket_desc, (struct sockaddr *)&con->client, (socklen_t*)&c);
+    if (con->client_sock < 0)
+    {
+        perror("accept failed");
+        return (-1);
+    }
+    puts("Connection accepted");
+    return (0);
+}

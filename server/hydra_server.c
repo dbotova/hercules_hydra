@@ -1,70 +1,29 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hydra_server.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dbotova <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/02/16 20:17:50 by dbotova           #+#    #+#             */
+/*   Updated: 2017/02/16 20:17:53 by dbotova          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "hydra_server.h"
 
-static int init_connnect(t_connection *con)
-{
-    con->socket_desc = socket(AF_INET , SOCK_STREAM , 0);
-    if (con->socket_desc == -1)
-    {
-        puts("Could not create socket");
-        return (-1);
-    }
-    puts("Socket created");
-
-    con->server.sin_family = AF_INET;
-    con->server.sin_addr.s_addr = INADDR_ANY;
-    con->server.sin_port = htons(8888);
-    if(bind(con->socket_desc, (struct sockaddr *)&con->server, sizeof(con->server)) < 0)
-    {
-        perror("bind failed. Error");
-        return (-1);
-    }
-    puts("bind done");
-    return (0);
-}
-
-static int hydra_connect(t_connection *con)
-{
-    int c;
-
-    c = 0;
-    if (init_connnect(con) < 0)
-    {
-        perror("Error occured");
-        return (-1);
-    }
-    listen(con->socket_desc , 3);
-    puts("Waiting for incoming connections...");
-    c = sizeof(struct sockaddr_in);
-    con->client_sock = accept(con->socket_desc, (struct sockaddr *)&con->client, (socklen_t*)&c);
-    if (con->client_sock < 0)
-    {
-        perror("accept failed");
-        return (-1);
-    }
-    puts("Connection accepted");
-    return (0);
-}
-
-int main()
+int main(int argc, char **argv)
 {
     t_connection *con;
-    int read_size;
+    int is_d;
 
-    con = malloc(sizeof(t_connection));
-    hydra_connect(con);
+    is_d = 0;
+    con = NULL;
+    if (argc == 2 && ft_strcmp(argv[1], "-D") == 0)
+        is_d = 1;
+    hydra_connect(con, is_d);
     if (con->client_sock < 1)
         return (1);
-    while((read_size = recv(con->client_sock, con->client_message, BUF_SIZE , 0)) > 0)
-    {
-        write(con->client_sock , "pong pong\n", ft_strlen("pong pong\n"));
-    }
-    if(read_size == 0)
-    {
-        puts("Client disconnected");
-        fflush(stdout);
-    }
-    else if(read_size == -1)
-        perror("recv failed");
     SMART_FREE(con);
     return (0);
 }

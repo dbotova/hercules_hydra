@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   client.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: dbotova <marvin@42.fr>                     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/02/16 20:18:43 by dbotova           #+#    #+#             */
+/*   Updated: 2017/02/16 20:18:44 by dbotova          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "hydra_client.h"
 
 static int init_connect(t_client_connection *con)
@@ -5,7 +17,7 @@ static int init_connect(t_client_connection *con)
     con->sock = socket(AF_INET , SOCK_STREAM , 0);
     if (con->sock == -1)
     {
-        puts("Could not create socket");
+        ft_printf("Could not create socket\n");
         return (-1);
     }
     puts("Socket created");
@@ -28,24 +40,22 @@ static int read_server(t_client_connection *con)
     message = NULL;
     while(42)
     {
-        puts("Enter message : ");
+        ft_printf("\nEnter message :\n");
         get_next_line(0, &message);
-
-        if (strcmp(message, "exit") == 0)
+        if (ft_strcmp(message, "exit") == 0)
             break ;
-
         if(send(con->sock, message, ft_strlen(message), 0) < 0)
         {
-            printf("Send failed");
+            perror("Send failed");
             return (-1);
         }
         if(recv(con->sock, server_reply, BUF_SIZE * 2, 0) < 0)
         {
-            puts("recv failed");
+            perror("recv failed");
             return (-1);
         }
-        puts("Server reply :");
-        puts(server_reply);
+        ft_printf("\nServer reply :\n");
+        ft_printf("%s", server_reply);
         SMART_FREE(message);
     }
     return (0);
@@ -58,7 +68,7 @@ int main()
     con = malloc(sizeof(t_client_connection));
     if (init_connect(con) < 0)
         return (-1);
-    puts("Connected");
+    ft_printf("Connected\n");
     read_server(con);
     close(con->sock);
     SMART_FREE(con);
