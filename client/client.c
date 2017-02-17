@@ -16,7 +16,7 @@ static int init_connect(t_client_connection *con)
     if (connect(con->sock, (struct sockaddr *)&con->server, sizeof(con->server)) < 0)
     {
         perror("connect failed. Error");
-        return 1;
+        return (-1);
     }
     return (0);
 }
@@ -24,10 +24,10 @@ static int init_connect(t_client_connection *con)
 static int read_server(t_client_connection *con)
 {
     char *message;
-    char server_reply[BUF_SIZE * 2];
+    char server_reply[BUF_SIZE * 2] = {0};
      
     message = NULL;
-    while(1)
+    while(42)
     {
         puts("Enter message : ");
         get_next_line(0, &message);
@@ -35,12 +35,12 @@ static int read_server(t_client_connection *con)
         if (strcmp(message, "exit") == 0)
             break ;
 
-        if(send(con->sock , message , ft_strlen(message) , 0) < 0)
+        if(send(con->sock, message, ft_strlen(message), 0) < 0)
         {
             printf("Send failed");
             return (-1);
         }
-        if(recv(con->sock , server_reply , BUF_SIZE * 2 , 0) < 0)
+        if(recv(con->sock, server_reply, BUF_SIZE * 2, 0) < 0)
         {
             puts("recv failed");
             break ;
@@ -48,7 +48,6 @@ static int read_server(t_client_connection *con)
         puts("Server reply :");
         puts(server_reply);
         SMART_FREE(message);
-        fflush(stdout);
     }
     return (0);
 }
@@ -56,39 +55,13 @@ static int read_server(t_client_connection *con)
 int main(int argc , char **argv)
 {
     t_client_connection *con;
-    char *message;
-    char server_reply[BUF_SIZE * 2];
-     
-    message = NULL;
+
     con = malloc(sizeof(t_client_connection));
     if (init_connect(con) < 0)
         return (-1);
-    puts("Connected\n");
-    //read_server(con);
-    while(1)
-    {
-        puts("Enter message : ");
-        get_next_line(0, &message);
-
-        if (strcmp(message, "exit") == 0)
-            break ;
-
-        if(send(con->sock , message , ft_strlen(message) , 0) < 0)
-        {
-            printf("Send failed");
-            return (1);
-        }
-        if(recv(con->sock , server_reply , BUF_SIZE * 2 , 0) < 0)
-        {
-            puts("recv failed");
-            break ;
-        }
-        puts("Server reply :");
-        puts(server_reply);
-        SMART_FREE(message);
-        fflush(stdout);
-    }
-     
+    puts("Connected");
+    read_server(con);
     close(con->sock);
+    SMART_FREE(con);
     return 0;
 }

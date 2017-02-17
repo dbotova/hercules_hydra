@@ -13,7 +13,7 @@ static int init_connnect(t_connection *con)
     con->server.sin_family = AF_INET;
     con->server.sin_addr.s_addr = INADDR_ANY;
     con->server.sin_port = htons(8888);
-    if(bind(con->socket_desc,(struct sockaddr *)&con->server , sizeof(con->server)) < 0)
+    if(bind(con->socket_desc, (struct sockaddr *)&con->server, sizeof(con->server)) < 0)
     {
         perror("bind failed. Error");
         return (-1);
@@ -47,26 +47,25 @@ static int hydra_connect(t_connection *con)
 int main(int argc, char **argv)
 {
     t_connection *con;
-     int read_size;
+    int read_size;
 
     con = malloc(sizeof(t_connection));
     hydra_connect(con);
     if (con->client_sock < 1)
         return (1);
-    while((read_size = recv(con->client_sock , con->client_message , BUF_SIZE , 0)) > 0)
+    while((read_size = recv(con->client_sock, con->client_message, BUF_SIZE , 0)) > 0)
     {
         if (ft_strcmp(con->client_message, "ping") == 0)
             write(con->client_sock , "pong pong\n", ft_strlen("pong pong\n"));
         if ((ft_strcmp(con->client_message, "stop") == 0))
         {
-            fflush(stdout);
+            puts("Server has been stopped");
+            SMART_FREE(con);
             exit(0);
         }
         else
-            write(con->client_sock , con->client_message , ft_strlen(con->client_message));
-        fflush(stdout);
+            write(con->client_sock, con->client_message, ft_strlen(con->client_message));
     }
-     
     if(read_size == 0)
     {
         puts("Client disconnected");
