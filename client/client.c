@@ -1,54 +1,94 @@
 #include "hydra_client.h"
 
-int main(int argc , char **argv)
+static int init_connect(t_client_connection *con)
 {
-    int sock;
-    struct sockaddr_in server;
-    char message[BUF_SIZE] , server_reply[BUF_SIZE * 2];
+    con->sock = socket(AF_INET , SOCK_STREAM , 0);
+    if (con->sock == -1)
+    {
+        puts("Could not create socket");
+        return (-1);
+    }
+    puts("Socket created");
      
-    //Create socket
-    sock = socket(AF_INET , SOCK_STREAM , 0);
-    if (sock == -1)
-        printf("Could not create socket");
-    printf("Socket created");
-     
-    server.sin_addr.s_addr = inet_addr("127.0.0.1");
-    server.sin_family = AF_INET;
-    server.sin_port = htons(8888);
- 
-    //Connect to remote server
-    if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
+    con->server.sin_addr.s_addr = inet_addr("127.0.0.1");
+    con->server.sin_family = AF_INET;
+    con->server.sin_port = htons(8888);
+    if (connect(con->sock, (struct sockaddr *)&con->server, sizeof(con->server)) < 0)
     {
         perror("connect failed. Error");
         return 1;
     }
+    return (0);
+}
+
+static int read_server(t_client_connection *con)
+{
+    char *message;
+    char server_reply[BUF_SIZE * 2];
      
-    printf("Connected\n");
-     
-    //keep communicating with server
+    message = NULL;
     while(1)
     {
-        printf("Enter message : ");
-        scanf("%s" , message);
-         
-        //Send some data
+        puts("Enter message : ");
+        get_next_line(0, &message);
+
         if (strcmp(message, "exit") == 0)
             break ;
-        if(send(sock , message , strlen(message) , 0) < 0)
+
+        if(send(con->sock , message , ft_strlen(message) , 0) < 0)
         {
             printf("Send failed");
-            return 1;
+            return (-1);
         }
-        if(recv(sock , server_reply , BUF_SIZE * 2 , 0) < 0)
+        if(recv(con->sock , server_reply , BUF_SIZE * 2 , 0) < 0)
         {
-            printf("recv failed");
+            puts("recv failed");
             break ;
         }
-         
-        ppintf("Server reply :");
-        printf(server_reply);
+        puts("Server reply :");
+        puts(server_reply);
+        SMART_FREE(message);
+        fflush(stdout);
+    }
+    return (0);
+}
+
+int main(int argc , char **argv)
+{
+    t_client_connection *con;
+    char *message;
+    char server_reply[BUF_SIZE * 2];
+     
+    message = NULL;
+    con = malloc(sizeof(t_client_connection));
+    if (init_connect(con) < 0)
+        return (-1);
+    puts("Connected\n");
+    //read_server(con);
+    while(1)
+    {
+        puts("Enter message : ");
+        get_next_line(0, &message);
+
+        if (strcmp(message, "exit") == 0)
+            break ;
+
+        if(send(con->sock , message , ft_strlen(message) , 0) < 0)
+        {
+            printf("Send failed");
+            return (1);
+        }
+        if(recv(con->sock , server_reply , BUF_SIZE * 2 , 0) < 0)
+        {
+            puts("recv failed");
+            break ;
+        }
+        puts("Server reply :");
+        puts(server_reply);
+        SMART_FREE(message);
+        fflush(stdout);
     }
      
-    close(sock);
+    close(con->sock);
     return 0;
 }

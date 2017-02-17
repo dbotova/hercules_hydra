@@ -1,5 +1,5 @@
-#ifndef HYDRA_DAEMON_H
-# define HYDRA_DAEMON_H
+#ifndef HYDRA_SERVER_H
+# define HYDRA_SERVER_H
 # include <sys/resource.h>
 # include <stdio.h>
 # include <unistd.h>
@@ -9,6 +9,7 @@
 # include <sys/socket.h>
 # include <arpa/inet.h>
 # include <string.h>
+# include "libft.h"
 # define BUF_SIZE 2000
 
 typedef struct s_connection
@@ -19,7 +20,5 @@ typedef struct s_connection
 	struct sockaddr_in server;
 	struct sockaddr_in client;
 }				t_connection;
-
-void					daemonize(const char *cmd);
 
 #endif
