@@ -26,6 +26,7 @@ static int hydra_connect(t_connection *con)
 {
     int c;
 
+    c = 0;
     if (init_connnect(con) < 0)
     {
         perror("Error occured");
@@ -44,7 +45,7 @@ static int hydra_connect(t_connection *con)
     return (0);
 }
 
-int main(int argc, char **argv)
+int main()
 {
     t_connection *con;
     int read_size;
@@ -55,16 +56,7 @@ int main(int argc, char **argv)
         return (1);
     while((read_size = recv(con->client_sock, con->client_message, BUF_SIZE , 0)) > 0)
     {
-        if (ft_strcmp(con->client_message, "ping") == 0)
-            write(con->client_sock , "pong pong\n", ft_strlen("pong pong\n"));
-        if ((ft_strcmp(con->client_message, "stop") == 0))
-        {
-            puts("Server has been stopped");
-            SMART_FREE(con);
-            exit(0);
-        }
-        else
-            write(con->client_sock, con->client_message, ft_strlen(con->client_message));
+        write(con->client_sock , "pong pong\n", ft_strlen("pong pong\n"));
     }
     if(read_size == 0)
     {

@@ -9,7 +9,6 @@ static int init_connect(t_client_connection *con)
         return (-1);
     }
     puts("Socket created");
-     
     con->server.sin_addr.s_addr = inet_addr("127.0.0.1");
     con->server.sin_family = AF_INET;
     con->server.sin_port = htons(8888);
@@ -43,7 +42,7 @@ static int read_server(t_client_connection *con)
         if(recv(con->sock, server_reply, BUF_SIZE * 2, 0) < 0)
         {
             puts("recv failed");
-            break ;
+            return (-1);
         }
         puts("Server reply :");
         puts(server_reply);
@@ -52,7 +51,7 @@ static int read_server(t_client_connection *con)
     return (0);
 }
 
-int main(int argc , char **argv)
+int main()
 {
     t_client_connection *con;
 
@@ -63,5 +62,5 @@ int main(int argc , char **argv)
     read_server(con);
     close(con->sock);
     SMART_FREE(con);
-    return 0;
+    return (0);
 }

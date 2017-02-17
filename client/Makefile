@@ -1,11 +1,11 @@
-OBJS = hydra_server.o
-LIBS = libft.a
+OBJS = client.o
+LIBS = ../server/libft.a
 
-HEADERS = hydra_server.h libft.h
+HEADERS = hydra_client.h ../server/libft.h
 
 CFLAGS += -Wall -Werror -Wextra
 
-NAME = hydra_server
+NAME = hydra_client
 
 all: $(NAME)
 
